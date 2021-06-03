@@ -2,15 +2,19 @@ import React, { useState, useContext } from "react";
 
 import Button from "../../shared/components/FormElements/Button";
 import Card from "../../shared/components/UIElements/Card";
+import ErrorModal from "../../shared/components/UIElements/ErrorModal";
+import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import Map from "../../shared/components/UIElements/Map";
 import Modal from "../../shared/components/UIElements/Modal";
 import { AuthContext } from "../../shared/context/Auth-context";
+import { useHttpClient } from "../../shared/Hooks/http-hook";
 import "./PlaceItem.css";
 
 const PlaceItem = (props) => {
   const auth = useContext(AuthContext);
   const [showMap, setShowMap] = useState(false);
-  const [showDelete, setDelete] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
+  const { isLoading, sendRequest, error, clearError } = useHttpClient();
 
   const openMapHandler = () => {
     setShowMap(true);
@@ -20,20 +24,28 @@ const PlaceItem = (props) => {
   };
 
   const showDeleteWarningHandler = () => {
-    setDelete(true);
+    setShowDelete(true);
   };
 
   const cancelDeleteWarningHandler = () => {
-    setDelete(false);
+    setShowDelete(false);
   };
 
-  const confirmDeleteHandler = () => {
-    setDelete(false);
-    console.log("deleting....");
+  const confirmDeleteHandler = async () => {
+    setShowDelete(false);
+    //console.log("deleting....");
+    try {
+      await sendRequest(
+        `http://localhost:5000/api/places/${props.id}`,
+        "DELETE"
+      );
+      props.onDelete(props.id);
+    } catch (err) {}
   };
 
   return (
     <React.Fragment>
+      <ErrorModal error={error} onClear={clearError} />
       <Modal
         show={showMap}
         onCancel={closeMapHandler}
@@ -54,7 +66,7 @@ const PlaceItem = (props) => {
       <Modal
         show={showDelete}
         onCancel={cancelDeleteWarningHandler}
-        header="are you sure"
+        header="Are you sure ?"
         footerClass="place-item__actions"
         footer={
           <React.Fragment>
@@ -68,12 +80,13 @@ const PlaceItem = (props) => {
         }
       >
         <p>
-          Do you want to delete this place? Please Note that it cant be undone
-          after
+          Do you want to Delete this place? Please Note that it cant be undone
+          later
         </p>
       </Modal>
       <li className="place-item">
         <Card className="place-item__content">
+          {isLoading && <LoadingSpinner asOverlay />}
           <div className="place-item__image">
             <img src={props.image} alt={props.title} />
           </div>
@@ -86,10 +99,10 @@ const PlaceItem = (props) => {
             <Button inverse onClick={openMapHandler}>
               VIEW ON MAP
             </Button>
-            {auth.isLoggedIn && (
+            {auth.userId === props.creatorId && (
               <Button to={`/places/${props.id}`}>EDIT</Button>
             )}
-            {auth.isLoggedIn && (
+            {auth.userId === props.creatorId && (
               <Button danger onClick={showDeleteWarningHandler}>
                 DELETE
               </Button>

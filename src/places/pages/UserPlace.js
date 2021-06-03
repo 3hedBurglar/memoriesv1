@@ -1,42 +1,48 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import ErrorModal from "../../shared/components/UIElements/ErrorModal";
+import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
+import { useHttpClient } from "../../shared/Hooks/http-hook";
 
 import PlaceList from "../components/PlaceList";
 
-const DUMMY_PLACES = [
-  {
-    id: "p1",
-    title: "The Taj MAHAL",
-    description: "The Taj Mahal is One of the WONDERS OF THE WORLD",
-    imageURL:
-      "https://thumbs-prod.si-cdn.com/Abm-e-V_cqdIqYDo_cXApagw8zI=/800x600/filters:no_upscale():focal(1471x1061:1472x1062)/https://public-media.si-cdn.com/filer/b6/30/b630b48b-7344-4661-9264-186b70531bdc/istock-478831658.jpg",
-    address: "Dharmapuri, Forest Colony, Tajganj, Agra, Uttar Pradesh 282001",
-    creatorId: "u1",
-    location: {
-      lat: 27.1751448,
-      lng: 78.0399535,
-    },
-  },
-  {
-    id: "p2",
-    title: "The HAWA MAHAL",
-    description: "The hawa Mahal is One of the WONDERS OF THE WORLD",
-    imageURL:
-      "https://thumbs-prod.si-cdn.com/Abm-e-V_cqdIqYDo_cXApagw8zI=/800x600/filters:no_upscale():focal(1471x1061:1472x1062)/https://public-media.si-cdn.com/filer/b6/30/b630b48b-7344-4661-9264-186b70531bdc/istock-478831658.jpg",
-    address: "Dharmapuri, Forest Colony, Tajganj, Agra, Uttar Pradesh 282001",
-    creatorId: "u2",
-    location: {
-      lat: 40.6892494,
-      lng: -74.0445004,
-    },
-  },
-];
-
 const UserPlace = () => {
   const userId = useParams().userId;
-  const newPlaces = DUMMY_PLACES.filter((place) => place.creatorId === userId);
+  const [loadedPlaces, setLoadedPlaces] = useState();
 
-  return <PlaceList items={newPlaces} />;
+  const { sendRequest, error, isLoading, clearError } = useHttpClient();
+
+  useEffect(() => {
+    const fetchPlaces = async () => {
+      try {
+        const responseData = await sendRequest(
+          `http://localhost:5000/api/places/user/${userId}`
+        );
+        setLoadedPlaces(responseData.places);
+      } catch (err) {}
+    };
+    fetchPlaces();
+  }, [sendRequest, userId]);
+
+  const onDeletePlaceHandler = (deletedPlaceId) => {
+    setLoadedPlaces((prevPlaces) =>
+      prevPlaces.filter((place) => place.id !== deletedPlaceId)
+    );
+  };
+
+  return (
+    <React.Fragment>
+      <ErrorModal error={error} onClear={clearError} />
+      {isLoading && (
+        <div className="center">
+          <LoadingSpinner asOverlay />
+        </div>
+      )}
+      {!isLoading && loadedPlaces && (
+        <PlaceList items={loadedPlaces} onDeletePlace={onDeletePlaceHandler} />
+      )}
+    </React.Fragment>
+  );
 };
 
 export default UserPlace;
