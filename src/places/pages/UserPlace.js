@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import Button from "../../shared/components/FormElements/Button";
+import Card from "../../shared/components/UIElements/Card";
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import { useHttpClient } from "../../shared/Hooks/http-hook";
@@ -16,7 +18,7 @@ const UserPlace = () => {
     const fetchPlaces = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5000/api/places/user/${userId}`
+          `${process.env.REACT_APP_BACKENED_URL}/places/user/${userId}`
         );
         setLoadedPlaces(responseData.places);
       } catch (err) {}
@@ -36,6 +38,16 @@ const UserPlace = () => {
       {isLoading && (
         <div className="center">
           <LoadingSpinner asOverlay />
+        </div>
+      )}
+      {!isLoading && !loadedPlaces && (
+        <div className="place-list center">
+          <Card>
+            <h2>Try adding One ?</h2>
+            <Button to="/places/new" inverse>
+              Add Place
+            </Button>
+          </Card>
         </div>
       )}
       {!isLoading && loadedPlaces && (

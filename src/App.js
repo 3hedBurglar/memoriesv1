@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { Suspense } from "react";
 
 import {
   BrowserRouter as Router,
@@ -7,31 +7,26 @@ import {
   Switch,
 } from "react-router-dom";
 
-import User from "./user/pages/Users.js";
-import NewPlace from "./places/pages/NewPlace";
+//import User from "./user/pages/Users";
+//import NewPlace from "./places/pages/NewPlace";
 import MainNavigation from "./shared/components/Navigation/MainNavigation";
-import UserPlace from "./places/pages/UserPlace.js";
-import UpdatePlace from "./places/pages/UpdatePlace.js";
-import Auth from "./user/pages/Auth.js";
+import LoadingSpinner from "./shared/components/UIElements/LoadingSpinner";
+//import UserPlace from "./places/pages/UserPlace";
+//import UpdatePlace from "./places/pages/UpdatePlace.js";
+//import Auth from "./user/pages/Auth.js";
 import { AuthContext } from "./shared/context/Auth-context.js";
+import { useAuth } from "./shared/Hooks/auth-hook";
+
+const User = React.lazy(() => import("./user/pages/Users"));
+const NewPlace = React.lazy(() => import("./places/pages/NewPlace"));
+const UserPlace = React.lazy(() => import("./places/pages/UserPlace"));
+const UpdatePlace = React.lazy(() => import("./places/pages/UpdatePlace.js"));
+const Auth = React.lazy(() => import("./user/pages/Auth.js"));
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  const [userId, setUserId] = useState(false);
-
-  const login = useCallback((uid) => {
-    setIsLoggedIn(true);
-    setUserId(uid);
-  }, []);
-
-  const logout = useCallback(() => {
-    setIsLoggedIn(false);
-    setUserId(null);
-  }, []);
-
+  const { token, login, logout, userId } = useAuth();
   let routes;
-  if (isLoggedIn) {
+  if (token) {
     routes = (
       <Switch>
         <Route path="/" exact>
@@ -69,7 +64,8 @@ function App() {
   return (
     <AuthContext.Provider
       value={{
-        isLoggedIn: isLoggedIn,
+        isLoggedIn: !!token,
+        token: token,
         userId: userId,
         login: login,
         logout: logout,
@@ -77,7 +73,17 @@ function App() {
     >
       <Router>
         <MainNavigation />
-        <main>{routes}</main>
+        <main>
+          <Suspense
+            fallback={
+              <div className="center">
+                <LoadingSpinner asOverlay />
+              </div>
+            }
+          >
+            {routes}
+          </Suspense>
+        </main>
       </Router>
     </AuthContext.Provider>
   );

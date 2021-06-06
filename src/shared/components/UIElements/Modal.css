@@ -6,13 +6,13 @@
   width: 80%;
   background: white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
-  border-radius: 8px;
+  border-radius: 2px;
 }
 
 .modal__header {
   width: 100%;
   padding: 1rem 0.5rem;
-  background: #2a006e;
+  background: #364f6b;
   color: white;
 }
 
@@ -42,8 +42,8 @@
 
 .modal-enter-active {
   transform: translateY(0);
-  opacity: 1;
-  transition: all 200ms;
+  opacity: 2;
+  transition: all 300ms;
 }
 
 .modal-exit {
@@ -56,7 +56,3 @@
   opacity: 0;
   transition: all 200ms;
 }
-
-/* AIzaSyCQdduEoC6QWAnpjfdIjsxpTvtD63AVU54 */
-
-/* AIzaSyCzZHWuOopEiivRspZdtqMByQ_E1bUZDeA */

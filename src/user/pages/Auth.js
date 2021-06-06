@@ -72,7 +72,7 @@ const Auth = () => {
     if (isLoginMode) {
       try {
         const responseData = await sendRequest(
-          "http://localhost:5000/api/users/login",
+          process.env.REACT_APP_BACKENED_URL + "/users/login",
           "POST",
           JSON.stringify({
             email: formState.inputs.email.value,
@@ -82,7 +82,7 @@ const Auth = () => {
             "Content-Type": "application/json",
           }
         );
-        auth.login(responseData.user.id);
+        auth.login(responseData.userId, responseData.token);
       } catch (err) {}
     } else {
       try {
@@ -93,12 +93,12 @@ const Auth = () => {
         formData.append("password", formState.inputs.password.value);
         formData.append("image", formState.inputs.image.value);
         const responseData = await sendRequest(
-          "http://localhost:5000/api/users/signup",
+          process.env.REACT_APP_BACKENED_URL + "/users/signup",
           "POST",
           formData
         );
 
-        auth.login(responseData.user.id);
+        auth.login(responseData.userId, responseData.token);
       } catch (err) {}
     }
   };
@@ -107,8 +107,13 @@ const Auth = () => {
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
       <Card className="authentication">
-        {isLoading && <LoadingSpinner asOverlay />}
-        <h2>Login Required</h2>
+        {isLoading && isLoginMode && <LoadingSpinner asOverlay />}
+        {isLoading && !isLoginMode && (
+          <div className="center">
+            <LoadingSpinner asOverlay />
+          </div>
+        )}
+        <h2>{isLoginMode ? "Login Required" : "Sign Up"}</h2>
         <hr />
         <form onSubmit={authSubmitHandler}>
           {!isLoginMode && (

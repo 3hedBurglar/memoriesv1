@@ -1,6 +1,6 @@
 .user-item {
   margin: 1rem;
-  width: calc(45% - 2rem);
+  width: calc(60% - 1rem);
   min-width: 17.5rem;
 }
 
@@ -12,12 +12,12 @@
   text-decoration: none;
   padding: 1rem;
   color: white;
-  background: #292929;
+  background: #222831;
 }
 
 .user-item a:hover,
 .user-item a:active {
-  background: #ffd900;
+  background: #393e46;
 }
 
 .user-item__content {
@@ -25,25 +25,26 @@
 }
 
 .user-item__image {
-  width: 4rem;
-  height: 4rem;
-  margin-right: 1rem;
+  width: 8rem;
+  height: 8rem;
+  margin-right: 2rem;
 }
 
 .user-item__info h2 {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   margin: 0 0 0.5rem 0;
   font-weight: normal;
-  color: #ffd900;
+  color: whitesmoke;
 }
 
 .user-item:hover h2,
 .user-item:active h2,
 .user-item:hover h3,
 .user-item:active h3 {
-  color: #292929;
+  color: whitesmoke;
 }
 
 .user-item__info h3 {
   margin: 0;
+  color: aliceblue;
 }

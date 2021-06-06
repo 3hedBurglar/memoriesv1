@@ -36,8 +36,12 @@ const PlaceItem = (props) => {
     //console.log("deleting....");
     try {
       await sendRequest(
-        `http://localhost:5000/api/places/${props.id}`,
-        "DELETE"
+        `${process.env.REACT_APP_BACKENED_URL}/places/${props.id}`,
+        "DELETE",
+        null,
+        {
+          Authorization: "Bearers " + auth.token,
+        }
       );
       props.onDelete(props.id);
     } catch (err) {}
@@ -89,7 +93,7 @@ const PlaceItem = (props) => {
           {isLoading && <LoadingSpinner asOverlay />}
           <div className="place-item__image">
             <img
-              src={`http://localhost:5000/${props.image}`}
+              src={`${process.env.REACT_APP_BACKENED_URL1}/${props.image}`}
               alt={props.title}
             />
           </div>

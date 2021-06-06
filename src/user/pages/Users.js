@@ -12,15 +12,15 @@ const User = () => {
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
 
   useEffect(() => {
-    const fetchUers = async () => {
+    const fetchUsers = async () => {
       try {
         const responseData = await sendRequest(
-          "http://localhost:5000/api/users"
+          process.env.REACT_APP_BACKENED_URL + "/users"
         );
         setIsLoadedUser(responseData.users);
       } catch (err) {}
     };
-    fetchUers();
+    fetchUsers();
   }, [sendRequest]);
 
   //console.log(isLoadedUser);
